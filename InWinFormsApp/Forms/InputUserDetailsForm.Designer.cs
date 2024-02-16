@@ -1,6 +1,7 @@
-﻿namespace InWinFormsApp
+﻿
+namespace InWinFormsApp
 {
-    partial class Form1
+    partial class InputUserDetailsForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,10 +29,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            SuspendLayout();
+            // 
+            // User Details Form
+            // 
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(800, 450);
+            Name = "UserDetails";
+            Text = "User Details";
+            this.SizeChanged += new System.EventHandler(this.LayoutPanel_SizeChanged);
+            ResumeLayout(false);
+        }
+
+        private void LayoutPanel_SizeChanged(object sender, EventArgs e)
+        {
+            // 
         }
 
         #endregion
