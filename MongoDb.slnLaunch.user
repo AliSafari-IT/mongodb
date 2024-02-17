@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Name": "InConsoleApp\\InConsoleApp.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Library\\Library.csproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]

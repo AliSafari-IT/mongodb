@@ -1,3 +1,6 @@
+using Library.MongoService;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using Timer = System.Windows.Forms.Timer;
@@ -6,18 +9,26 @@ namespace InWinFormsApp
 {
     public partial class InputUserDetailsForm : Form
     {
+
         // Form Title
         private Label label = new();
+        private Button button = new ();
+
         private TextBox textBox = new()
         {
             Text = "a textbox in InputUserDetailsForm",
         };
+        IMongoDatabase db = Connection.Instance.Database;
 
         private Timer timer = new Timer();
+
+       
 
         public InputUserDetailsForm()
         {
             InitializeComponent();
+            var collation = db.GetCollection<Item>("test_collection");
+            countRemote = ""+getTotalAsync(collation);
             Font headerFont = new("ArialBlack", 15F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             Font textFont = new("Arial", 10F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             textBox = new()
@@ -45,32 +56,34 @@ namespace InWinFormsApp
             this.Controls.Add(textBox);
             this.ResumeLayout(false);
 
-            Button button = new Button();
             button.TextAlign = ContentAlignment.MiddleCenter;
             button.Text = "OK";
             button.TextImageRelation = TextImageRelation.ImageBeforeText;
             button.ImageAlign = ContentAlignment.MiddleCenter;
             button.Location = new Point(650, 400);
-            button.Size = new Size(100, 40);
+            button.Size = new Size(200, 140);
             button.Click +=
                 async (sender, e) =>
                 {
-                    button.Text = "Done"; 
                     button.BackColor = Color.Green;
                     button.Enabled = false; // Disable button (optional, prevents multiple clicks)
-                    button.Text = "Please wait..."; // Informative text
+                    button.Text = "Please wait..." + countRemote;  // Informative text
 
                     await Task.Delay(5000);  // Non-blocking wait
                     ShowAboutBox();
 
                     button.Enabled = true; // Re-enable the button
-                    button.Text = "OK"; // Restore the original text
+                    button.Text = "OK" + countRemote;  // Restore the original text
                 };
 
             this.Controls.Add(button);
 
         }
 
+        private async Task<long> getTotalAsync(IMongoCollection<Item> collation)
+        {
+            return await collation.CountDocumentsAsync(new BsonDocument());
+        }
 
         private void textBox_TextChanged(object sender, EventArgs e)
         {
@@ -78,19 +91,26 @@ namespace InWinFormsApp
             textBox.Width = requiredWidth + 5;
         }
 
+            private string countRemote = null;
+        
         private void ShowAboutBox()
         {
             // ... (About box)
+
+
+
+            // Count all documents
+            button.Text = "Done " + countRemote;
+
             AboutBox1 aboutBox1 = new();
             aboutBox1.Show();
 
             // Option 1: Close the current form
-            this.Close();
+           // this.Close();
 
             // Option 2: Minimize the current form
             this.WindowState = FormWindowState.Minimized;
         }
-
 
         private void timer1_Tick(object sender, EventArgs e)
         {
