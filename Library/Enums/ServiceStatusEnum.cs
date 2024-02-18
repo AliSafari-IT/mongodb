@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Commons.Enums
+namespace Library.Enums
 {
     public enum ServiceStatusEnum
     {
