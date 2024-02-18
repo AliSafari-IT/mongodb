@@ -2,6 +2,7 @@
 using Library.Enums;
 using Library.Models;
 using Library.MongoService;
+using Library.Tools;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -48,15 +49,20 @@ else
 
 
 var newUser = new User {
-    Email = $"a_{guid}@..com",
+    Email = $"a_{count}@exam.com",
     Fullname = "FullName_" + count,
-    // Add a random number from 1 to 10000 for the Id
-    //Id =  new Random().Next(1, 100000),
-    Password = "1cX/65476513",
     Role = UserRoleEnum.ADMINISTRATOR,
+    CreationDate = DateTime.Now,
+    Password = count + "+P8s33npS",
+    Gender = (UserGenderEnum)new Random().Next(0, 2),
+    Avatar = "https://picsum.photos/200/300?random=" + count,
+    Localization = LocalizationEnum.Dutch,
 
-    
 };
+
+// 3 first & 3 last characters
+newUser.Username = newUser.Fullname.Substring(0, 3) + newUser.Fullname.Substring(newUser.Fullname.Length - 3, 3);
+newUser.UserInfoIsValid = newUser.PasswordChecker(newUser.Password) && new EmailValidator().IsValidEmail(newUser.Email);
 
 var userColName = Environment.GetEnvironmentVariable("USER_COLLECTION");
 var userCollection = instance.Database.GetCollection<User>(userColName);
@@ -67,9 +73,12 @@ if (!newUser.UserInfoIsValid)
     Console.WriteLine( "Enter email:" );
     var email = Console.ReadLine();
     newUser.Email = email;
+    newUser.UpdateDate = DateTime.Now;
+
     // update newUser in db
     userCollection.ReplaceOne(u => u.Id == newUser.Id, newUser);
 }
 Console.WriteLine( "User inserted with email: " + newUser.Email );
 // pause
-Console.ReadLine();
+newUser.ShowInfo(newUser);
+newUser.HideConfindentialValues();

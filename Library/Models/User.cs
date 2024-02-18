@@ -13,8 +13,9 @@ namespace Library.Models
 {
     public class User : IModel
     {
-        public string password { get; private set; }
+        public string password { get; set; }
         private string email;
+        private bool hide;
 
         // Fullname
         [BsonElement("fullname")]
@@ -34,46 +35,42 @@ namespace Library.Models
         {
             get => email; set
             {
-                if (EmailChecker(value))
+                if (new EmailValidator().IsValidEmail(value))
                 {
                     email = value;
                 }
                 else
                 {
-                    Console.WriteLine("Invalid Email Address");
+                    if(!hide) {
+                        Console.WriteLine("Invalid Email Address");
+                    }
                 };
             }
         }
         [BsonIgnore]
         [JsonPropertyName("password")]
         [JsonProperty(PropertyName = "password")]
-        public string Password
-        {
-            get => password; set
-            {
-                if (PasswordChecker(value))
-                {
-                    password = value;
-                }
-                else
-                {
-                    Console.WriteLine(" Password should be at least 8 characters long and should contain at least one uppercase letter, one lowercase letter and one number");
-                }
+        public string Password { get => GetPasswordHash(); set => SetPasswordHash(value); }
 
-            }
-        }
-        [BsonElement("password_hash")]
-        [JsonPropertyName("password_hash")]
-        [JsonProperty(PropertyName = "password_hash")]
-        public string PasswordHash
+        public global::System.String GetPasswordHash()
         {
-            get => password;
-            set
+            return password;
+        }
+
+        public void SetPasswordHash(global::System.String value)
+        {
+            password = value;
+            if (value != null && value.Length > 0 && PasswordChecker(value))
             {
-                if (!string.IsNullOrEmpty(value))
+                password = new PasswordHasher().HashPassword(value);
+                Console.WriteLine("ps: " + value + "\tpH: " + password);
+            }
+            else
+            {
+                if (!hide)
                 {
-                    password = new PasswordHasher().HashPassword(value);
-                    Console.WriteLine("pH: " + password);
+                    Console.WriteLine("pH: " + value);
+                    Console.WriteLine(" Password should be at least 8 characters long and should contain at least one uppercase letter, one lowercase letter and one number");
                 }
             }
         }
@@ -119,7 +116,7 @@ namespace Library.Models
         public string Localization { get; set; }
 
 
-        public global::System.Boolean UserInfoIsValid
+        public bool UserInfoIsValid
         {
             get => new EmailValidator().IsValidEmail(Email)
         && PasswordChecker(Password);
@@ -131,6 +128,10 @@ namespace Library.Models
 
         public bool PasswordChecker(string password)
         {
+            if (password == null)
+            {
+                return false; // Or throw an appropriate exception
+            }
             if (password.Length < 8)
             {
                 return false;
@@ -150,34 +151,10 @@ namespace Library.Models
             return true;
         }
 
-        public bool EmailChecker(string email)
-        {
-            // Check for valid email format using regular expression
-            string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-            if (!Regex.IsMatch(email, emailPattern))
-            {
-                return false; // Invalid email format
-            }
-
-            // Check for invalid email domain
-            string[] invalidDomains = { "example.com", "example.org", "example.net" };
-            if (invalidDomains.Any(domain => email.Contains(domain)))
-            {
-                return false; // Invalid email domain
-            }
-            // Check for invalid domain address like: a_40e6f35e-a416-43b3-bb63-dc4d9721cee7@..com
-            if (email.Contains("@.."))
-            {
-                //  return false; // Invalid domain address
-            }
-
-            return true; // Email is valid
-        }
-
         public void HideConfindentialValues()
         {
+            hide = true;
             this.Password = null;
-            this.PasswordHash = null;
             this.Email = null;
             this.EmailVerified = null;
             this.LastLoginDate = null;
@@ -185,5 +162,12 @@ namespace Library.Models
             this.Localization = null;
 
         }
+
+        public void ShowInfo(User newUser)
+        {
+            Console.WriteLine($"Id: {Id} \nFullname: {Fullname} \nEmail: {Email} \nPassword: {Password ?? "(not set)"}  \nUserInfoIsValid: {UserInfoIsValid} \nDone!");
+        }
+
+
     }
 }
