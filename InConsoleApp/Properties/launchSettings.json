@@ -7,6 +7,10 @@
         "COLLECTION": "collection",
         "REMOTE_CONNSTR": "mongodb+srv://ali:Ali+mongo2024@cluster0.pdbpotw.mongodb.net/",
         "USER_COLLECTION": "users"
+      },
+      "MongoDB": {
+        "Host": "mongodb+srv://ali:Ali+mongo2024@cluster0.pdbpotw.mongodb.net/",
+        "Database": "test"
       }
     }
   }

@@ -6,9 +6,12 @@
         "ENVIRONMENT": "Development",
         "REMOTE": "mongodb+srv://ali:Ali+mongo2024@cluster0.pdbpotw.mongodb.net/",
         "LOCAL": "mongodb://localhost:27017",
-        "DATABASE": "test"
-      },
-      "nativeDebugging": true
+        "DATABASE": "test",
+        "MongoDB:Host": "mongodb+srv://ali:Ali+mongo2024@cluster0.pdbpotw.mongodb.net/",
+        "MongoDB:Database": "test"
+      },     
+      "nativeDebugging": true,
+      "jsWebView2Debugging": false
     }
   }
 }

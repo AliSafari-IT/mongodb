@@ -1,9 +1,4 @@
 {
-	"folders": [
-		{
-			"uri": "d:/GHRepos/Learn/MongoDb/Library",
-		},
-{"path":"."}
-	],
-	"settings": {}
+  "folders": [{ "path": "." }],
+  "settings": {}
 }

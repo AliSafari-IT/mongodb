@@ -1,3 +1,5 @@
+﻿using InWinFormsApp.Forms;
+using Library.Models;
 using Library.MongoService;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -18,19 +20,28 @@ namespace InWinFormsApp
         {
             Text = "a textbox in InputUserDetailsForm",
         };
-        IMongoDatabase db = Connection.Instance.Database;
+
+        public IMongoDatabase mongoDb {  get; set; }
+        public int NrDocs { get; set; }
 
         private Timer timer = new Timer();
 
-       
+        WindowOverlay window = new WindowOverlay();
+
 
         public InputUserDetailsForm()
         {
             InitializeComponent();
-            var collation = db.GetCollection<Item>("test_collection");
-            countRemote = ""+getTotalAsync(collation);
+            var conn = Connection.Instance;
+            mongoDb = conn.Database;
+            var collection = mongoDb.GetCollection<User>("users");
+             
+            var NrDocs = collection.CountDocuments(new BsonDocument()).ToJson().Where(w => true).Count();
+
+
             Font headerFont = new("ArialBlack", 15F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             Font textFont = new("Arial", 10F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
+
             textBox = new()
             {
                 Text = "a textbox in InputUserDetailsForm",
@@ -57,7 +68,7 @@ namespace InWinFormsApp
             this.ResumeLayout(false);
 
             button.TextAlign = ContentAlignment.MiddleCenter;
-            button.Text = "OK";
+            button.Text = "OK_" + NrDocs;
             button.TextImageRelation = TextImageRelation.ImageBeforeText;
             button.ImageAlign = ContentAlignment.MiddleCenter;
             button.Location = new Point(650, 400);
@@ -67,20 +78,20 @@ namespace InWinFormsApp
                 {
                     button.BackColor = Color.Green;
                     button.Enabled = false; // Disable button (optional, prevents multiple clicks)
-                    button.Text = "Please wait..." + countRemote;  // Informative text
+                    button.Text = "Please wait..." + NrDocs;  // Informative text
 
-                    await Task.Delay(5000);  // Non-blocking wait
+                    await Task.Delay(2000);  // Non-blocking wait
                     ShowAboutBox();
 
                     button.Enabled = true; // Re-enable the button
-                    button.Text = "OK" + countRemote;  // Restore the original text
+                    button.Text = "OK___" + NrDocs;  // Restore the original text
                 };
 
             this.Controls.Add(button);
 
         }
 
-        private async Task<long> getTotalAsync(IMongoCollection<Item> collation)
+        private async Task<long> GetTotalAsync(IMongoCollection<User> collation)
         {
             return await collation.CountDocumentsAsync(new BsonDocument());
         }
@@ -100,13 +111,13 @@ namespace InWinFormsApp
 
 
             // Count all documents
-            button.Text = "Done " + countRemote;
+            button.Text = "Done ► " + NrDocs;
 
             AboutBox1 aboutBox1 = new();
             aboutBox1.Show();
 
             // Option 1: Close the current form
-           // this.Close();
+            this.Close();
 
             // Option 2: Minimize the current form
             this.WindowState = FormWindowState.Minimized;

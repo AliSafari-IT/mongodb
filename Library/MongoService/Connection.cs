@@ -12,7 +12,7 @@ namespace Library.MongoService
         {
             get
             {
-                return _instance ?? (_instance = new Connection());
+                return _instance ??= new Connection();
             }
         }
         private Connection()
@@ -21,11 +21,13 @@ namespace Library.MongoService
             IConfiguration config = new ConfigurationBuilder().
                 AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).
                 AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: true).
+                AddJsonFile("config.json", true,true).
                 AddEnvironmentVariables().
                 Build();
+            Console.WriteLine("config: ", config);
 
-            this._connectionString = config["MongoDB:Host"];
-            this._connectionDatabase = config["MongoDB:Database"];
+            this._connectionString = config[key: "MongoDB:Host"];
+            this._connectionDatabase = config[key: "MongoDB:Database"];
         }
 
         #endregion

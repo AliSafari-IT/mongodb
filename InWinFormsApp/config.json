@@ -1,0 +1,6 @@
+{
+  "MongoDB": {
+    "Host": "mongodb+srv://ali:Ali+mongo2024@cluster0.pdbpotw.mongodb.net/",
+    "Database": "test"
+  }
+}
